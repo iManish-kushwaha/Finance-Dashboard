@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="preconnect" href="https://sciript.google.com">
+<link rel="preconnect" href="https://script.google.com">
 <!-- Font — non-blocking (display=swap already, load after paint) -->
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"></noscript>
@@ -51,6 +51,7 @@
   --card-shadow-hover:0 16px 36px rgba(0,0,0,.6), 0 3px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(212,160,23,.16);
   --kpi-shadow:0 12px 28px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.4), inset 0 1px 0 rgba(212,160,23,.12);
   --kpi-shadow-hover:0 18px 38px rgba(0,0,0,.6), 0 3px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(212,160,23,.22);
+  --hover-border:rgba(255,255,255,.16);
 }
 
 :root[data-theme="light"] {
@@ -82,6 +83,7 @@
   --card-shadow-hover:0 16px 32px rgba(20,40,110,.16), 0 3px 10px rgba(20,40,110,.10), inset 0 1px 0 rgba(255,255,255,.95);
   --kpi-shadow:0 12px 26px rgba(20,40,110,.12), 0 2px 8px rgba(20,40,110,.08), inset 0 1px 0 rgba(255,255,255,.9);
   --kpi-shadow-hover:0 18px 34px rgba(20,40,110,.18), 0 3px 10px rgba(20,40,110,.12), inset 0 1px 0 rgba(255,255,255,.95);
+  --hover-border:rgba(20,50,110,.28);
 }
 
 /* ══════════════════════════════
@@ -646,7 +648,7 @@ select.fsel:focus{outline:none;border-color:rgba(70,140,240,.6);box-shadow:0 0 1
   position:relative;overflow:hidden;
   transition:border-color .3s,transform .3s,box-shadow .3s;cursor:default;
 ;min-height:105px;display:flex;flex-direction:row;align-items:center;gap:14px;padding:16px 18px;box-sizing:border-box;width:100%}
-.kcard3:hover{border-color:rgba(255,255,255,.14);transform:translateY(-2px);box-shadow:var(--kpi-shadow-hover) !important}
+.kcard3:hover{border-color:var(--hover-border);transform:translateY(-2px);box-shadow:var(--kpi-shadow-hover) !important}
 
 /* ══════════════════════════════
    3D TILT + ENTRANCE ANIMATION
@@ -701,7 +703,7 @@ select.fsel:focus{outline:none;border-color:rgba(70,140,240,.6);box-shadow:0 0 1
   padding:14px 16px;margin-bottom:12px;overflow:hidden;position:relative;
   transition:border-color .3s, box-shadow .3s, transform .3s;
 }
-.sc:hover{border-color:rgba(255,255,255,.12);box-shadow:var(--card-shadow-hover) !important;transform:translateY(-1px)}
+.sc:hover{border-color:var(--hover-border);box-shadow:var(--card-shadow-hover) !important;transform:translateY(-1px)}
 .stitle{
   font-size:.88rem;font-weight:700;color:#D0DCF0;
   letter-spacing:.3px;
@@ -803,7 +805,7 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
 ══════════════════════════════ */
 .dpop{
   display:none;position:fixed;z-index:9999;
-  width:320px;max-width:calc(100vw - 24px);
+  width:352px;max-width:calc(100vw - 24px);
   max-height:min(60vh,420px);
   background:var(--card);
   border:1px solid var(--border2);
@@ -817,7 +819,7 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
 @keyframes dpopIn{from{opacity:0;transform:scale(.94) translateY(-4px)}to{opacity:1;transform:none}}
 .dpop-hdr{
   display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
-  padding:13px 14px 10px;border-bottom:1px solid var(--border);
+  padding:13px 26px 10px;border-bottom:1px solid var(--border);
   flex-shrink:0;
 }
 .dpop-title{font-size:.84rem;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
@@ -829,9 +831,9 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
   transition:all .2s;
 }
 .dpop-close:hover{background:rgba(232,85,104,.15);color:#E85568;border-color:rgba(232,85,104,.3)}
-.dpop-body{overflow-y:auto;padding:4px 14px 10px}
+.dpop-body{overflow-y:auto;padding:8px 26px 14px}
 .ddlist{display:flex;flex-direction:column;padding:2px 0 6px}
-.ddrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 2px;border-bottom:1px solid var(--border)}
+.ddrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 4px;border-bottom:1px solid var(--border)}
 .ddrow:last-child{border-bottom:none}
 .ddlabel{color:var(--txt);font-size:.78rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .ddamt{font-weight:700;font-size:.8rem;font-family:'Calibri','Segoe UI',monospace;white-space:nowrap;flex-shrink:0}
@@ -1199,7 +1201,10 @@ thead th { font-size: clamp(.55rem, .75vw, .7rem); }
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
   border-radius:2px 2px 0 0;
 }
-.pay-src-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px);box-shadow:var(--card-shadow-hover)}
+.pay-src-card:hover{border-color:var(--hover-border);transform:translateY(-2px);box-shadow:var(--card-shadow-hover)}
+.pay-src-card-total{border-width:1.5px;background:linear-gradient(160deg,rgba(255,255,255,.035),transparent 65%) , #131828;}
+.pay-src-card-total .pay-src-name{color:#C4D2E8;font-weight:800;letter-spacing:.6px;}
+.pay-src-card-total .pay-src-amt{font-size:1.3rem;font-weight:800;}
 .pay-src-name{font-size:.72rem;color:#7A8CA0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pay-src-amt{font-size:.95rem;font-weight:700;color:#D0DCEE;margin:2px 0;}
 .pay-src-pct{font-size:.75rem;font-weight:700;}
@@ -1220,6 +1225,7 @@ thead th { font-size: clamp(.55rem, .75vw, .7rem); }
   margin-bottom:4px;
 }
 .pay-loan-card{ padding:18px 24px; }
+.pay-top-row.no-loan{ grid-template-columns:1fr; }
 @media(max-width:700px){
   .pay-top-row{ grid-template-columns:1fr; }
 }
@@ -1597,35 +1603,19 @@ thead th { font-size: clamp(.55rem, .75vw, .7rem); }
      TAB 2: PAYMENT
 ─────────────────────────────────── -->
 <div class="panel" id="p-pay">
-  <!-- Payment KPIs -->
+  <!-- Payment KPIs — Total Income and Loan (if any) render as the first
+       cards inside pay-src-row, in the same uniform style as every
+       source card, followed by the per-source breakdown -->
   <div class="pay-kpi-wrap">
-    <!-- Total Income + Loan — top row -->
-    <div class="pay-top-row">
-      <div class="pay-tot-card kcard3" id="pay-tot-card">
-        <div class="pay-tot-left">
-          <div class="kc3-lbl">&#x1F4B0; TOTAL RECEIVED (Incl. Loan)</div>
-          <div class="kc3-val G" id="pk-tot" style="font-size:2rem;font-weight:800">&#x20B9;0</div>
-          <div class="kc3-sub"><span id="pk-cnt">0</span> entries &nbsp;|&nbsp; Avg <span id="pk-avg">&#x20B9;0</span>/month</div>
-        </div>
-      </div>
-      <div class="pay-loan-card kcard3">
-        <div class="pay-tot-left">
-          <div class="kc3-lbl">&#x1F3E6; TOTAL LOAN TAKEN</div>
-          <div class="kc3-val R" id="pk-loan-amt" style="font-size:2rem;font-weight:800">&#x20B9;0</div>
-          <div class="kc3-sub"><span id="pk-loan-cnt">0 loan entries</span> &nbsp;|&nbsp; <span id="pk-loan-pct" style="color:#FF3355;font-weight:700">0%</span> of total</div>
-        </div>
-      </div>
-    </div>
-    <!-- Source-wise KPI cards — dynamic -->
     <div class="pay-src-row" id="pay-src-row"></div>
   </div>
   <div class="g2">
     <div class="sc">
-      <div class="stitle"><span class="ticon">&#x1F4B0;</span> Income by Source</div><div class="stsubtitle">Payment category breakdown</div>
-      <div style="position:relative;height:280px"><canvas id="payBar"></canvas></div>
+      <div class="stitle"><span class="ticon">&#x1F4C8;</span> Yearly Income Trend</div><div class="stsubtitle">Year-wise income growth</div>
+      <div style="position:relative;height:280px"><canvas id="payYr"></canvas></div>
     </div>
     <div class="sc">
-      <div class="stitle"><span class="ticon">&#x1F4C8;</span> Monthly Income Trend</div><div class="stsubtitle">Month-wise income over time</div>
+      <div class="stitle"><span class="ticon">&#x1F4C8;</span> Monthly Income Trend</div><div class="stsubtitle" id="payLineSub">Month-wise income over time</div>
       <div style="position:relative;height:280px"><canvas id="payLine"></canvas></div>
     </div>
   </div>
@@ -2447,13 +2437,17 @@ function renderExp(){
     data:{
       labels:allYrs,
       datasets:[
-        {label:'Income',data:allYrs.map(y=>yInc[y]),borderColor:'#00FF88',backgroundColor:'rgba(0,255,136,.08)',borderWidth:2.5,pointBackgroundColor:'#00FF88',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:6,tension:.35,fill:true},
-        {label:'Expenses',data:allYrs.map(y=>yExp[y]),borderColor:'#FF3355',backgroundColor:'rgba(255,51,85,.08)',borderWidth:2.5,pointBackgroundColor:'#FF3355',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:6,tension:.35,fill:true}
+        {label:'Income',data:allYrs.map(y=>yInc[y]),borderColor:'#00FF88',backgroundColor:'rgba(0,255,136,.08)',borderWidth:2.5,pointBackgroundColor:'#00FF88',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:7,pointHitRadius:26,tension:.35,fill:true},
+        {label:'Expenses',data:allYrs.map(y=>yExp[y]),borderColor:'#FF3355',backgroundColor:'rgba(255,51,85,.08)',borderWidth:2.5,pointBackgroundColor:'#FF3355',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:7,pointHitRadius:26,tension:.35,fill:true}
       ]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      layout:{padding:{top:24}},
+      layout:{padding:{top:24,right:44,left:6}},
+      // 'nearest' + intersect:false means a click near a point OR its value
+      // label (which sits a few px above/below the dot) both register —
+      // not just an exact click on the dot itself.
+      interaction:{mode:'nearest', intersect:false},
       scales:{
         x:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:yrCt.tickColor,font:{size:10}}},
         y:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:yrCt.tickColor,callback:v=>numFmt(v)},border:{dash:[4,4]}}
@@ -2481,9 +2475,30 @@ function renderExp(){
           callbacks:{label:ctx=>` ${ctx.dataset.label}: ${numFmt(ctx.parsed.y)}`}
         },
         datalabels:{
-          display:true, align:'top', anchor:'end', offset:6,
+          display:true,
+          // Push each point's label AWAY from the other line (whichever series
+          // is lower at that index gets pushed further down, the higher one
+          // further up) so Income/Expense values never sit on top of each other.
+          anchor:ctx=>{
+            const i=ctx.dataIndex, ds=ctx.chart.data.datasets;
+            const inc=ds[0].data[i], exp=ds[1].data[i];
+            const mine = ctx.datasetIndex===0 ? inc : exp;
+            const other = ctx.datasetIndex===0 ? exp : inc;
+            return mine<=other ? 'start' : 'end';
+          },
+          align:ctx=>{
+            const i=ctx.dataIndex, ds=ctx.chart.data.datasets;
+            const inc=ds[0].data[i], exp=ds[1].data[i];
+            const mine = ctx.datasetIndex===0 ? inc : exp;
+            const other = ctx.datasetIndex===0 ? exp : inc;
+            return mine<=other ? 'bottom' : 'top';
+          },
+          offset:7,
           font:{size:9,weight:'700'},
-          color:ctx=>ctx.dataset.borderColor,
+          color:'#fff',
+          backgroundColor:ctx=>ctx.dataset.borderColor,
+          borderRadius:4,
+          padding:{top:2,bottom:2,left:5,right:5},
           formatter:v=>v?numFmt(v):''
         }
       }
@@ -2516,13 +2531,17 @@ function renderExp(){
     data:{
       labels:actMo.map(m=>m.slice(0,3)),
       datasets:[
-        {label:'Income',data:actMo.map(m=>mInc[m]),borderColor:'#00FF88',backgroundColor:'rgba(0,255,136,.08)',borderWidth:2.5,pointBackgroundColor:'#00FF88',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:6,tension:.35,fill:true},
-        {label:'Expenses',data:actMo.map(m=>mExp[m]),borderColor:'#FF3355',backgroundColor:'rgba(255,51,85,.08)',borderWidth:2.5,pointBackgroundColor:'#FF3355',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:6,tension:.35,fill:true}
+        {label:'Income',data:actMo.map(m=>mInc[m]),borderColor:'#00FF88',backgroundColor:'rgba(0,255,136,.08)',borderWidth:2.5,pointBackgroundColor:'#00FF88',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:7,pointHitRadius:26,tension:.35,fill:true},
+        {label:'Expenses',data:actMo.map(m=>mExp[m]),borderColor:'#FF3355',backgroundColor:'rgba(255,51,85,.08)',borderWidth:2.5,pointBackgroundColor:'#FF3355',pointBorderColor:'#0B0E1A',pointBorderWidth:1.5,pointRadius:4,pointHoverRadius:7,pointHitRadius:26,tension:.35,fill:true}
       ]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      layout:{padding:{top:24}},
+      layout:{padding:{top:24,right:44,left:6}},
+      // 'nearest' + intersect:false means a click near a point OR its value
+      // label (which sits a few px above/below the dot) both register —
+      // not just an exact click on the dot itself.
+      interaction:{mode:'nearest', intersect:false},
       scales:{
         x:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:moCt.tickColor,font:{size:10}}},
         y:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:moCt.tickColor,callback:v=>numFmt(v)},border:{dash:[4,4]}}
@@ -2551,9 +2570,30 @@ function renderExp(){
           callbacks:{label:ctx=>` ${ctx.dataset.label}: ${numFmt(ctx.parsed.y)}`}
         },
         datalabels:{
-          display:true, align:'top', anchor:'end', offset:6,
+          display:true,
+          // Push each point's label AWAY from the other line (whichever series
+          // is lower at that index gets pushed further down, the higher one
+          // further up) so Income/Expense values never sit on top of each other.
+          anchor:ctx=>{
+            const i=ctx.dataIndex, ds=ctx.chart.data.datasets;
+            const inc=ds[0].data[i], exp=ds[1].data[i];
+            const mine = ctx.datasetIndex===0 ? inc : exp;
+            const other = ctx.datasetIndex===0 ? exp : inc;
+            return mine<=other ? 'start' : 'end';
+          },
+          align:ctx=>{
+            const i=ctx.dataIndex, ds=ctx.chart.data.datasets;
+            const inc=ds[0].data[i], exp=ds[1].data[i];
+            const mine = ctx.datasetIndex===0 ? inc : exp;
+            const other = ctx.datasetIndex===0 ? exp : inc;
+            return mine<=other ? 'bottom' : 'top';
+          },
+          offset:7,
           font:{size:9,weight:'700'},
-          color:ctx=>ctx.dataset.borderColor,
+          color:'#fff',
+          backgroundColor:ctx=>ctx.dataset.borderColor,
+          borderRadius:4,
+          padding:{top:2,bottom:2,left:5,right:5},
           formatter:v=>v?numFmt(v):''
         }
       }
@@ -2791,118 +2831,169 @@ function renderPay(){
   const mos2 = [...new Set(rows.map(r=>yr(r)+'-'+mo(r)).filter(Boolean))];
   const avg  = mos2.length>0?tot/mos2.length:0;
 
-  // ── Total Income KPI (incl loan) ──
-  animateNumber(document.getElementById('pk-tot'), grandTot, INR);
-  document.getElementById('pk-avg').textContent = INR(avg);
-  document.getElementById('pk-cnt').textContent = allP.length;
-
-  // ── Loan KPI card ──
-  const loanEl = document.getElementById('pk-loan-amt');
-  if(loanEl) animateNumber(loanEl, loanTot, INR);
-  const loanCntEl = document.getElementById('pk-loan-cnt');
-  if(loanCntEl) loanCntEl.textContent = loanR.length + ' loan entries';
-  const loanPctEl = document.getElementById('pk-loan-pct');
-  if(loanPctEl && grandTot>0) loanPctEl.textContent = ((loanTot/grandTot)*100).toFixed(1)+'%';
-
-  // ── Source-wise KPI cards (income only, % of income excl loan) ──
+  // ── Total Income + Loan (if any) render as the first cards, then every
+  // source — all in the same uniform card style for a clean, consistent look
   const srcColors = ['#4e9af1','#43c869','#e8863a','#a67be8','#e85353','#d4b44a','#e87fc0','#3ecfcf','#7bb8ff','#f9a03f','#6de08a','#c39eff'];
   const srcRow = document.getElementById('pay-src-row');
   if(srcRow){
-    srcRow.innerHTML = sents.map(([src,val],i)=>{
+    const cards = [];
+
+    // Total Income — always shown, first card, green accent
+    cards.push(`<div class="pay-src-card pay-src-card-total" style="border-color:#2ECC8A40">
+      <div class="pay-src-card-top" style="position:absolute;top:0;left:0;right:0;height:3px;background:#2ECC8A;border-radius:2px 2px 0 0"></div>
+      <div class="pay-src-name">&#x1F4B0; TOTAL INCOME</div>
+      <div class="pay-src-amt" style="color:#2ECC8A">${INR(grandTot)}</div>
+      <div class="pay-src-pct" style="color:#2ECC8A">${allP.length} entries <span style="color:#4A6080;font-size:.65rem;font-weight:400">&middot; Avg ${INR(avg)}/mo</span></div>
+      <div class="pay-src-bar" style="background:#2ECC8A;width:100%"></div>
+    </div>`);
+
+    // Loan — only when a loan actually exists, second card, gold/red accent
+    if(loanTot > 0){
+      const loanPct = grandTot>0 ? ((loanTot/grandTot)*100).toFixed(1) : 0;
+      cards.push(`<div class="pay-src-card pay-src-card-total" style="border-color:#FF335540">
+        <div class="pay-src-card-top" style="position:absolute;top:0;left:0;right:0;height:3px;background:#FF3355;border-radius:2px 2px 0 0"></div>
+        <div class="pay-src-name">&#x1F3E6; TOTAL LOAN TAKEN</div>
+        <div class="pay-src-amt" style="color:#FF3355">${INR(loanTot)}</div>
+        <div class="pay-src-pct" style="color:#FF3355">${loanR.length} loan entries <span style="color:#4A6080;font-size:.65rem;font-weight:400">&middot; ${loanPct}% of total</span></div>
+        <div class="pay-src-bar" style="background:#FF3355;width:${Math.max(5,loanPct)}%"></div>
+      </div>`);
+    }
+
+    // Per-source breakdown — unchanged
+    sents.forEach(([src,val],i)=>{
       const pct = tot>0?((val/tot)*100).toFixed(1):0;
       const col = srcColors[i%srcColors.length];
       const shortName = src.length>22?src.slice(0,21)+'…':src;
       const barW = Math.max(5,pct);
-      return `<div class="pay-src-card" style="border-color:${col}22">
+      cards.push(`<div class="pay-src-card" style="border-color:${col}22">
         <div class="pay-src-card-top" style="position:absolute;top:0;left:0;right:0;height:2px;background:${col};border-radius:2px 2px 0 0;opacity:.8"></div>
         <div class="pay-src-name" title="${src}">${shortName}</div>
         <div class="pay-src-amt">${INR(val)}</div>
         <div class="pay-src-pct" style="color:${col}">${pct}% <span style="color:#4A6080;font-size:.65rem;font-weight:400">of income</span></div>
         <div class="pay-src-bar" style="background:${col};width:${barW}%"></div>
-      </div>`;
-    }).join('');
+      </div>`);
+    });
+
+    srcRow.innerHTML = cards.join('');
   }
 
-  killChart('payBar');
-  const ct = getChartTheme();
-  charts.payBar = new Chart(document.getElementById('payBar').getContext('2d'),{
-    type:'bar',
+  // ── Yearly Income Trend — all years, income excl loan ──
+  const yrMap = {};
+  ALL.filter(r=>sheet(r)==='Payment' && cat(r)!=='Loan').forEach(r=>{
+    const y = yr(r); if(!y) return;
+    yrMap[y] = (yrMap[y]||0) + amt(r);
+  });
+  const payYrs = Object.keys(yrMap).sort((a,b)=>a-b);
+
+  killChart('payYr');
+  const payYrCt = getChartTheme();
+  charts.payYr = new Chart(document.getElementById('payYr').getContext('2d'),{
+    type:'line',
     data:{
-      labels:sents.map(e=>e[0]),
+      labels: payYrs,
       datasets:[{
-        label:'Income',
-        data:sents.map(e=>e[1]),
-        backgroundColor:sents.map((_,i)=>MULTI_PALETTE[i%MULTI_PALETTE.length]+'bb'),
-        borderColor:sents.map((_,i)=>MULTI_PALETTE[i%MULTI_PALETTE.length]),
-        borderWidth:1.5,
-        borderRadius:5,
-        borderSkipped:false
+        label:'Income', data: payYrs.map(y=>yrMap[y]),
+        borderColor:'#00FF88', backgroundColor:'rgba(0,255,136,.08)',
+        borderWidth:2.5, pointBackgroundColor:'#00FF88', pointBorderColor:'#0B0E1A', pointBorderWidth:1.5,
+        pointRadius:4, pointHoverRadius:7, pointHitRadius:26, tension:.35, fill:true
       }]
     },
     options:{
-      indexAxis:'y',
       responsive:true, maintainAspectRatio:false,
+      layout:{padding:{top:24,right:44,left:6}},
+      interaction:{mode:'nearest', intersect:false},
       scales:{
-        x:{
-          grid:{color:ct.gridColor, drawBorder:false},
-          ticks:{color:ct.tickColor, font:{size:10}, callback:v=>numFmt(v)},
-          border:{dash:[4,4]}
-        },
-        y:{
-          grid:{color:'transparent', drawBorder:false},
-          ticks:{
-            color:ct.tickColor,
-            font:{size:10, weight:'600'},
-            // show full source name, no number formatting
-            callback: function(val){ return this.getLabelForValue(val); }
-          }
-        }
+        x:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:payYrCt.tickColor,font:{size:10}}},
+        y:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:payYrCt.tickColor,callback:v=>numFmt(v)},border:{dash:[4,4]}}
       },
       onHover:chartHoverPointer,
       onClick:(evt,elements)=>{
         if(!elements.length) return;
-        const source = sents[elements[0].index][0];
-        const matched = rows.filter(r=>cat(r)===source);
+        const year = payYrs[elements[0].index];
+        const matched = ALL.filter(r=>sheet(r)==='Payment'&&cat(r)!=='Loan'&&yr(r)===year);
         const tot2 = matched.reduce((s,r)=>s+amt(r),0);
         const records = matched.map(r=>({label:cat(r)||'—', amount:INR(amt(r)), color:'#00FF88'}));
-        openDetailModal(evt, 'Source: '+source, matched.length+' transactions · Total '+INR(tot2), records);
+        openDetailModal(evt, year+' — Income', matched.length+' transactions · Total '+INR(tot2), records);
       },
       plugins:{
         legend:{display:false},
         tooltip:{
           backgroundColor:'rgba(10,16,32,.95)',
-          borderColor:'rgba(255,255,255,.1)', borderWidth:1,
-          titleColor:'#C0D0E8', bodyColor:'#8898B8',
-          callbacks:{
-            title: items => items[0].label,
-            label: ctx => '  ₹' + ctx.parsed.x.toLocaleString('en-IN') +
-              (tot>0 ? '  (' + ((ctx.parsed.x/tot)*100).toFixed(1) + '%)' : '')
-          }
+          borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+          titleColor:'#C0D0E8',bodyColor:'#8898B8',
+          callbacks:{label:ctx=>` Income: ${numFmt(ctx.parsed.y)}`}
         },
-        datalabels:{display:false}
+        datalabels:{
+          display:true, align:'top', anchor:'end', offset:7,
+          font:{size:9,weight:'700'}, color:'#fff',
+          backgroundColor:'#00FF88', borderRadius:4, padding:{top:2,bottom:2,left:5,right:5},
+          formatter:v=>v?numFmt(v):''
+        }
       }
     }
   });
 
-  const mmap={};
-  rows.forEach(r=>{ const k=yr(r)+' '+mo(r); mmap[k]=(mmap[k]||0)+amt(r); });
-  const mkeys=Object.keys(mmap).sort();
+  // ── Monthly Income Trend — connected to the YEAR filter only (ignores the
+  // Month filter), months kept in calendar sequence Jan → latest with data ──
+  const selYrPay = document.getElementById('yrF').value;
+  const payRowsYr = ALL.filter(r=>sheet(r)==='Payment' && cat(r)!=='Loan' && (selYrPay==='ALL' || yr(r)===selYrPay));
+  const mIncMap = {};
+  MONTHS.forEach(m=>{ mIncMap[m]=0; });
+  payRowsYr.forEach(r=>{ if(mIncMap[mo(r)]!==undefined) mIncMap[mo(r)] += amt(r); });
+  let lastIdxPay=-1;
+  MONTHS.forEach((m,idx)=>{ if(mIncMap[m]>0) lastIdxPay=idx; });
+  const actMoPay = lastIdxPay>=0 ? MONTHS.slice(0,lastIdxPay+1) : [];
+
+  const payLineSubEl = document.getElementById('payLineSub');
+  if(payLineSubEl) payLineSubEl.textContent = (selYrPay==='ALL'?'All years':selYrPay) + ' · ' + actMoPay.length + ' months shown';
 
   killChart('payLine');
+  const payMoCt = getChartTheme();
   charts.payLine = new Chart(document.getElementById('payLine').getContext('2d'),{
     type:'line',
     data:{
-      labels:mkeys.map(k=>k.replace(/\d{4} /,'')),
-      datasets:[{label:'Monthly Income',data:mkeys.map(k=>mmap[k]),borderColor:'#00FF88',backgroundColor:'rgba(0,255,136,.06)',borderWidth:2.5,pointBackgroundColor:'#00FF88',pointRadius:4,tension:.4,fill:true}]
+      labels: actMoPay.map(m=>m.slice(0,3)),
+      datasets:[{
+        label:'Income', data: actMoPay.map(m=>mIncMap[m]),
+        borderColor:'#00FF88', backgroundColor:'rgba(0,255,136,.08)',
+        borderWidth:2.5, pointBackgroundColor:'#00FF88', pointBorderColor:'#0B0E1A', pointBorderWidth:1.5,
+        pointRadius:4, pointHoverRadius:7, pointHitRadius:26, tension:.35, fill:true
+      }]
     },
-    options:{...barOpts(), onHover:chartHoverPointer, onClick:(evt,elements)=>{
-      if(!elements.length) return;
-      const key = mkeys[elements[0].index];
-      const matched = rows.filter(r=> (yr(r)+' '+mo(r))===key);
-      const tot2 = matched.reduce((s,r)=>s+amt(r),0);
-      const records = matched.map(r=>({label:cat(r)||'—', amount:INR(amt(r)), color:'#00FF88'}));
-      openDetailModal(evt, key+' — Income', matched.length+' transactions · Total '+INR(tot2), records);
-    }}
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      layout:{padding:{top:24,right:44,left:6}},
+      interaction:{mode:'nearest', intersect:false},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:payMoCt.tickColor,font:{size:10}}},
+        y:{grid:{color:'rgba(255,255,255,.04)',drawBorder:false},ticks:{color:payMoCt.tickColor,callback:v=>numFmt(v)},border:{dash:[4,4]}}
+      },
+      onHover:chartHoverPointer,
+      onClick:(evt,elements)=>{
+        if(!elements.length) return;
+        const month = actMoPay[elements[0].index];
+        const matched = payRowsYr.filter(r=>mo(r)===month);
+        const tot2 = matched.reduce((s,r)=>s+amt(r),0);
+        const records = matched.map(r=>({label:cat(r)||'—', amount:INR(amt(r)), color:'#00FF88'}));
+        const titleYr = selYrPay!=='ALL' ? ' '+selYrPay : '';
+        openDetailModal(evt, month+titleYr+' — Income', matched.length+' transactions · Total '+INR(tot2), records);
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'rgba(10,16,32,.95)',
+          borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+          titleColor:'#C0D0E8',bodyColor:'#8898B8',
+          callbacks:{label:ctx=>` Income: ${numFmt(ctx.parsed.y)}`}
+        },
+        datalabels:{
+          display:true, align:'top', anchor:'end', offset:7,
+          font:{size:9,weight:'700'}, color:'#fff',
+          backgroundColor:'#00FF88', borderRadius:4, padding:{top:2,bottom:2,left:5,right:5},
+          formatter:v=>v?numFmt(v):''
+        }
+      }
+    }
   });
 
   // ── Populate Source filter dropdown ──
