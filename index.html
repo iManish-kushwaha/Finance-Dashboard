@@ -805,7 +805,7 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
 ══════════════════════════════ */
 .dpop{
   display:none;position:fixed;z-index:9999;
-  width:352px;max-width:calc(100vw - 24px);
+  width:270px;max-width:calc(100vw - 24px);
   max-height:min(60vh,420px);
   background:var(--card);
   border:1px solid var(--border2);
@@ -818,12 +818,22 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
 .dpop.open{display:flex}
 @keyframes dpopIn{from{opacity:0;transform:scale(.94) translateY(-4px)}to{opacity:1;transform:none}}
 .dpop-hdr{
-  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
-  padding:13px 26px 10px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 16px 11px;border-bottom:1px solid var(--border);
   flex-shrink:0;
 }
-.dpop-title{font-size:.84rem;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
-.dpop-meta{font-size:.66rem;color:var(--txt3);margin-top:4px;font-weight:600;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dpop-hdr-main{display:flex;align-items:center;gap:11px;min-width:0;flex:1}
+.dpop-icon{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;line-height:1;
+  background:linear-gradient(135deg,rgba(212,160,23,.2),rgba(212,160,23,.06));
+  border:1px solid rgba(212,160,23,.32);
+  box-shadow:0 4px 10px rgba(212,160,23,.14), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.dpop-title{font-size:.86rem;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+.dpop-meta{font-size:.68rem;margin-top:3px;font-weight:600;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dpop-meta-label{color:var(--txt3)}
+.dpop-meta-value{color:#D4A017;font-weight:800}
 .dpop-close{
   background:rgba(255,255,255,.05);border:1px solid var(--border2);
   color:var(--txt2);width:24px;height:24px;border-radius:6px;cursor:pointer;
@@ -831,10 +841,12 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
   transition:all .2s;
 }
 .dpop-close:hover{background:rgba(232,85,104,.15);color:#E85568;border-color:rgba(232,85,104,.3)}
-.dpop-body{overflow-y:auto;padding:8px 26px 14px}
+.dpop-body{overflow-y:auto;padding:8px 16px 12px}
 .ddlist{display:flex;flex-direction:column;padding:2px 0 6px}
 .ddrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 4px;border-bottom:1px solid var(--border)}
 .ddrow:last-child{border-bottom:none}
+.ddleft{display:flex;align-items:baseline;gap:7px;flex:1;min-width:0}
+.ddrank{color:var(--txt3);font-size:.72rem;font-weight:700;font-family:'Calibri','Segoe UI',monospace;flex-shrink:0;min-width:14px}
 .ddlabel{color:var(--txt);font-size:.78rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .ddamt{font-weight:700;font-size:.8rem;font-family:'Calibri','Segoe UI',monospace;white-space:nowrap;flex-shrink:0}
 @media(max-width:600px){
@@ -1385,9 +1397,12 @@ thead th { font-size: clamp(.55rem, .75vw, .7rem); }
 <!-- DETAIL POPOVER — chart click drill-down, anchored on the dashboard (not a full modal) -->
 <div id="detailModal" class="dpop">
   <div class="dpop-hdr">
-    <div style="min-width:0;flex:1">
-      <h3 id="detailModalTitle" class="dpop-title">Details</h3>
-      <div id="detailModalMeta" class="dpop-meta"></div>
+    <div class="dpop-hdr-main">
+      <div class="dpop-icon" id="detailModalIcon">&#x1F4CA;</div>
+      <div style="min-width:0;flex:1">
+        <h3 id="detailModalTitle" class="dpop-title">Details</h3>
+        <div id="detailModalMeta" class="dpop-meta"></div>
+      </div>
     </div>
     <button class="dpop-close" onclick="closeDetailModal()">&#x2715;</button>
   </div>
@@ -1834,14 +1849,26 @@ document.getElementById('modal').addEventListener('click', e => { if(e.target===
 // near the click point), title = header text, meta = small subtitle (count/total),
 // records = array of {label, amount, color} — label is the description/name,
 // amount is an already-formatted string (e.g. from INR()), color is optional.
-function openDetailModal(evt, title, meta, records, emptyMsg){
+// Splits a meta string like "24 transactions · Total ₹45,230" into a muted
+// label part and a bold accent value part (the final "· "-separated segment),
+// matching the "Label:  **Value**" look of the reference popover.
+function formatDpopMeta(metaStr){
+  if(!metaStr) return '';
+  const parts = String(metaStr).split('·').map(s=>s.trim()).filter(Boolean);
+  if(parts.length < 2) return `<span class="dpop-meta-label">${parts[0]||''}</span>`;
+  const value = parts.pop();
+  return `<span class="dpop-meta-label">${parts.join(' · ')} · </span><span class="dpop-meta-value">${value}</span>`;
+}
+function openDetailModal(evt, title, meta, records, emptyMsg, icon){
   document.getElementById('detailModalTitle').textContent = title;
-  document.getElementById('detailModalMeta').textContent = meta || '';
+  document.getElementById('detailModalMeta').innerHTML = formatDpopMeta(meta);
+  const iconEl = document.getElementById('detailModalIcon');
+  if(iconEl) iconEl.innerHTML = icon || '&#x1F4CA;';
   const body = document.getElementById('detailModalBody');
   body.innerHTML = records.length
-    ? records.map(rec=>{
+    ? records.map((rec,idx)=>{
         const safeLabel = (rec.label==null?'—':String(rec.label)).replace(/"/g,'&quot;');
-        return `<div class="ddrow"><div class="ddlabel" title="${safeLabel}">${safeLabel}</div><div class="ddamt" style="color:${rec.color||'var(--txt)'}">${rec.amount}</div></div>`;
+        return `<div class="ddrow"><div class="ddleft"><span class="ddrank">${idx+1}.</span><span class="ddlabel" title="${safeLabel}">${safeLabel}</span></div><div class="ddamt" style="color:${rec.color||'var(--txt)'}">${rec.amount}</div></div>`;
       }).join('')
     : `<div style="text-align:center;padding:26px 4px;color:var(--txt3);font-size:.8rem">${emptyMsg||'No records found'}</div>`;
 
@@ -2399,7 +2426,7 @@ function renderExp(){
         const matched = expOnly.filter(r=>cat(r)===label);
         const tot2 = matched.reduce((s,r)=>s+amt(r),0);
         const records = matched.map(r=>({label:desc(r)||'—', amount:INR(amt(r)), color:'#FF3355'}));
-        openDetailModal(evt, 'Category: '+label, matched.length+' transactions · Total '+INR(tot2), records);
+        openDetailModal(evt, 'Category: '+label, matched.length+' transactions · Total '+INR(tot2), records, undefined, '&#x1F3F7;');
       },
       plugins:{
         legend:{display:false},
@@ -2464,7 +2491,7 @@ function renderExp(){
         const tot2 = matched.reduce((s,r)=>s+amt(r),0);
         const col = isInc?'#00FF88':'#FF3355';
         const records = matched.map(r=>({label:isInc?(cat(r)||'—'):(desc(r)||'—'), amount:INR(amt(r)), color:col}));
-        openDetailModal(evt, year+' — '+(isInc?'Income':'Expenses'), matched.length+' transactions · Total '+INR(tot2), records);
+        openDetailModal(evt, year+' — '+(isInc?'Income':'Expenses'), matched.length+' transactions · Total '+INR(tot2), records, undefined, '&#x1F4C5;');
       },
       plugins:{
         legend:{labels:{color:'#8898B8',font:{size:10},boxWidth:10,padding:14,usePointStyle:true,pointStyle:'circle'}},
@@ -2559,7 +2586,7 @@ function renderExp(){
         const col = isInc?'#00FF88':'#FF3355';
         const records = matched.map(r=>({label:isInc?(cat(r)||'—'):(desc(r)||'—'), amount:INR(amt(r)), color:col}));
         const titleYr = selYr!=='ALL' ? ' '+selYr : '';
-        openDetailModal(evt, month+titleYr+' — '+(isInc?'Income':'Expenses'), matched.length+' transactions · Total '+INR(tot2), records);
+        openDetailModal(evt, month+titleYr+' — '+(isInc?'Income':'Expenses'), matched.length+' transactions · Total '+INR(tot2), records, undefined, '&#x1F4C5;');
       },
       plugins:{
         legend:{labels:{color:'#8898B8',font:{size:10},boxWidth:10,padding:14,usePointStyle:true,pointStyle:'circle'}},
@@ -2792,7 +2819,7 @@ function renderLoans(){
           const tot2 = matched.reduce((s,l)=>s+l.taken,0);
           const col = label==='Running' ? '#E8A040' : '#2ECC8A';
           const records = matched.map(l=>({label:l.name, amount:INR(l.taken), color:col}));
-          openDetailModal(evt, label+' Loans', matched.length+' loan(s) · Total Taken '+INR(tot2), records, 'No loans in this status');
+          openDetailModal(evt, label+' Loans', matched.length+' loan(s) · Total Taken '+INR(tot2), records, 'No loans in this status', '&#x1F3E6;');
         },
         plugins:{
           legend:{display:false},
@@ -2913,7 +2940,7 @@ function renderPay(){
         const matched = ALL.filter(r=>sheet(r)==='Payment'&&cat(r)!=='Loan'&&yr(r)===year);
         const tot2 = matched.reduce((s,r)=>s+amt(r),0);
         const records = matched.map(r=>({label:cat(r)||'—', amount:INR(amt(r)), color:'#00FF88'}));
-        openDetailModal(evt, year+' — Income', matched.length+' transactions · Total '+INR(tot2), records);
+        openDetailModal(evt, year+' — Income', matched.length+' transactions · Total '+INR(tot2), records, undefined, '&#x1F4C5;');
       },
       plugins:{
         legend:{display:false},
@@ -2976,7 +3003,7 @@ function renderPay(){
         const tot2 = matched.reduce((s,r)=>s+amt(r),0);
         const records = matched.map(r=>({label:cat(r)||'—', amount:INR(amt(r)), color:'#00FF88'}));
         const titleYr = selYrPay!=='ALL' ? ' '+selYrPay : '';
-        openDetailModal(evt, month+titleYr+' — Income', matched.length+' transactions · Total '+INR(tot2), records);
+        openDetailModal(evt, month+titleYr+' — Income', matched.length+' transactions · Total '+INR(tot2), records, undefined, '&#x1F4C5;');
       },
       plugins:{
         legend:{display:false},
@@ -3146,7 +3173,7 @@ function renderStk(){
       const tot2 = matched.reduce((s,r)=>s+amt(r),0);
       const col = isProfit?'#00FF88':'#FF3355';
       const records = matched.map(r=>({label:desc(r)||'—', amount:INR(amt(r)), color:col}));
-      openDetailModal(evt, month+' — '+(isProfit?'Profit':'Loss'), matched.length+' trades · Total '+INR(tot2), records);
+      openDetailModal(evt, month+' — '+(isProfit?'Profit':'Loss'), matched.length+' trades · Total '+INR(tot2), records, undefined, '&#x1F4C5;');
     }}
   });
 
@@ -3168,7 +3195,7 @@ function renderStk(){
         const tot2 = matched.reduce((s,r)=>s+amt(r),0);
         const col = isProfit?'#00FF88':'#FF3355';
         const records = matched.map(r=>({label:desc(r)||'—', amount:INR(amt(r)), color:col}));
-        openDetailModal(evt, isProfit?'Total Profit':'Total Loss', matched.length+' trades · Total '+INR(tot2), records);
+        openDetailModal(evt, isProfit?'Total Profit':'Total Loss', matched.length+' trades · Total '+INR(tot2), records, undefined, '&#x1F4CA;');
       },
       plugins:{
         legend:{position:'bottom',labels:{color:getChartTheme().legendColor,font:{size:10},boxWidth:12}},
