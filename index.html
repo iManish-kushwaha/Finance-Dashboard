@@ -654,6 +654,12 @@ select.fsel:focus{outline:none;border-color:rgba(70,140,240,.6);box-shadow:0 0 1
 ;min-height:105px;display:flex;flex-direction:row;align-items:center;gap:14px;padding:16px 18px;box-sizing:border-box;width:100%}
 .kcard3:hover{border-color:var(--hover-border);transform:translateY(-2px);box-shadow:var(--kpi-shadow-hover) !important}
 
+.kc3-icon{ animation:kc3IconFloat 3.4s ease-in-out infinite; }
+@keyframes kc3IconFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-2.5px); }
+}
+
 /* ══════════════════════════════
    3D TILT + ENTRANCE ANIMATION
    (JS sets the live tilt transform on mousemove; this just preps the
@@ -757,6 +763,7 @@ select.fsel:focus{outline:none;border-color:rgba(70,140,240,.6);box-shadow:0 0 1
   cursor:pointer;
   flex:1 1 88px;
   max-width:120px;
+  min-width:0;
   box-sizing:border-box;
 }
 .subkpi:nth-of-type(2n){ animation-delay:.35s }
@@ -808,8 +815,11 @@ select.fsel:focus{outline:none;border-color:rgba(70,140,240,.6);box-shadow:0 0 1
 @media(max-width:480px){
   .subkpi-row{ gap:8px; }
   .subkpi{ flex-basis:calc(33.33% - 6px); max-width:none; }
-  .exp-connector{ display:none; }
-  .subkpi-linked::before, .subkpi-linked .subkpi-node{ display:none; }
+  .exp-connector{ height:18px; }
+  .exp-connector::before{ height:9px; }
+  .exp-connector::after, .exp-connector .conn-joint{ top:9px; }
+  .subkpi-linked::before{ top:-7px; height:7px; }
+  .subkpi-linked .subkpi-node{ top:-10px; width:4px; height:4px; }
 }
 
 /* ══════════════════════════════
@@ -2127,8 +2137,19 @@ function layoutSubkpiConnector(){
   const tiles = Array.from(row.querySelectorAll('.subkpi'));
   if(!tiles.length) return;
 
+  // The tiles have a continuous "float" animation (subFloat) that nudges
+  // each one up/down by a couple of px, staggered per-tile via animation-
+  // delay. getBoundingClientRect() reflects that live transform, so two
+  // tiles that are genuinely in the same CSS row could momentarily report
+  // different `top` values just because their float phase differs — that
+  // made row-1 detection (and the tick line) flicker/misfire, which is
+  // what looked like "sometimes 3 per row, sometimes 2". Freeze the
+  // animation for this one synchronous measurement, then restore it
+  // immediately so nothing visibly glitches.
+  tiles.forEach(t=>{ t.style.animationPlayState='paused'; t.style.transform='none'; });
+
   const rowRect = row.getBoundingClientRect();
-  if(rowRect.width<=0) return;
+  if(rowRect.width<=0){ tiles.forEach(t=>{ t.style.animationPlayState=''; t.style.transform=''; }); return; }
 
   // Row-1 tiles = those sharing the smallest top position (small tolerance
   // for sub-pixel rounding across browsers)
@@ -2136,19 +2157,20 @@ function layoutSubkpiConnector(){
   const minTop = Math.min(...tops);
   const row1 = [];
   tiles.forEach((t,i)=>{
-    if(Math.abs(tops[i]-minTop) < 2){ t.classList.add('subkpi-linked'); row1.push(t); }
+    if(Math.abs(tops[i]-minTop) < 4){ t.classList.add('subkpi-linked'); row1.push(t); }
     else t.classList.remove('subkpi-linked');
   });
-  if(!row1.length) return;
 
   // Bus line spans exactly the row-1 tiles' extent (not the full container,
   // so it never implies a connection to tiles that wrapped below)
-  const firstRect = row1[0].getBoundingClientRect();
-  const lastRect = row1[row1.length-1].getBoundingClientRect();
-  const busLeftPct = ((firstRect.left + firstRect.width/2 - rowRect.left) / rowRect.width) * 100;
-  const busRightPct = ((rowRect.right - (lastRect.left + lastRect.width/2)) / rowRect.width) * 100;
-  conn.style.setProperty('--bus-left', Math.max(busLeftPct,0).toFixed(2)+'%');
-  conn.style.setProperty('--bus-right', Math.max(busRightPct,0).toFixed(2)+'%');
+  if(row1.length){
+    const firstRect = row1[0].getBoundingClientRect();
+    const lastRect = row1[row1.length-1].getBoundingClientRect();
+    const busLeftPct = ((firstRect.left + firstRect.width/2 - rowRect.left) / rowRect.width) * 100;
+    const busRightPct = ((rowRect.right - (lastRect.left + lastRect.width/2)) / rowRect.width) * 100;
+    conn.style.setProperty('--bus-left', Math.max(busLeftPct,0).toFixed(2)+'%');
+    conn.style.setProperty('--bus-right', Math.max(busRightPct,0).toFixed(2)+'%');
+  }
 
   // Stem aligns under the Total Expenses card, relative to the connector's
   // own parent (shared with the KPI row, so the percentages line up)
@@ -2162,6 +2184,9 @@ function layoutSubkpiConnector(){
       conn.style.setProperty('--stem-x', centerPct.toFixed(2)+'%');
     }
   }
+
+  // Restore the floating animation exactly as it was
+  tiles.forEach(t=>{ t.style.animationPlayState=''; t.style.transform=''; });
 }
 let __connResizeT;
 window.addEventListener('resize', ()=>{
