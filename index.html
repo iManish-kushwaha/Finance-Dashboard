@@ -389,6 +389,10 @@ tbody td { color: var(--tbl-txt) !important; }
 .dbrow { background: var(--dbrow-bg) !important; border-color: var(--dbrow-border) !important; }
 .kc3-sub { color: var(--txt3) !important; }
 .kc3-lbl { color: var(--txt3) !important; }
+.subkpi { background: var(--kcard-bg) !important; border-color: var(--border) !important; }
+.subkpi-lbl, .subkpi-sub { color: var(--txt3) !important; }
+.subkpi-val { color: var(--txt) !important; }
+:root[data-theme="light"] .subkpi-val { color: #1A2A4A !important; }
 
 /* Light mode tab bar adjustments */
 :root[data-theme="light"] #tbar { border-bottom: 1px solid rgba(30,60,150,.18) !important; }
@@ -694,6 +698,121 @@ select.fsel:focus{outline:none;border-color:rgba(70,140,240,.6);box-shadow:0 0 1
 @media(min-width:480px) and (max-width:900px){.krow3{grid-template-columns:1fr 1fr}}
 
 /* ══════════════════════════════
+   EXPENSE SUB-KPI CONNECTOR + STRIP
+   The connector (stem + bus line) drops from the Total Expenses card
+   into the mini-KPI strip. Only tiles in the strip's FIRST row get the
+   little tick/node linking them to the bus line — JS adds the
+   `subkpi-linked` class to exactly those tiles, so tiles that wrap to a
+   2nd/3rd row never show a tick floating with nothing to connect to.
+══════════════════════════════ */
+.exp-connector{
+  position:relative;
+  height:24px;
+  pointer-events:none;
+}
+.exp-connector::before{ /* stem down from Total Expenses card — position set by JS via --stem-x so it lines up even when the KPI row wraps at tablet widths */
+  content:'';
+  position:absolute;
+  left:var(--stem-x,50%); top:0;
+  width:2px; height:14px;
+  background:linear-gradient(180deg,rgba(232,85,104,.75),rgba(212,160,23,.6));
+  transform:translateX(-50%);
+  transition:left .25s ease;
+}
+.exp-connector::after{ /* horizontal bus line — spans only the first row of tiles, set by JS via --bus-left/--bus-right */
+  content:'';
+  position:absolute;
+  left:var(--bus-left,4%); right:var(--bus-right,4%); top:14px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,rgba(212,160,23,.55) 8%,rgba(212,160,23,.55) 92%,transparent);
+  transition:left .25s ease, right .25s ease;
+}
+.exp-connector .conn-joint{
+  position:absolute; top:14px; left:var(--stem-x,50%);
+  width:7px; height:7px; border-radius:50%;
+  background:#D4A017; transform:translate(-50%,-50%);
+  animation:jointPulse 2.2s ease-in-out infinite;
+  transition:left .25s ease;
+}
+@keyframes jointPulse{
+  0%,100%{ box-shadow:0 0 6px rgba(212,160,23,.6); opacity:1; }
+  50%{ box-shadow:0 0 15px rgba(212,160,23,1); opacity:.7; }
+}
+.subkpi-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 8px;
+  margin:0 0 18px 0;
+}
+.subkpi{
+  position:relative;
+  background:linear-gradient(180deg,#141A2C,#111626);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:9px;
+  padding:9px 6px 8px;
+  text-align:center;
+  transition:border-color .3s,box-shadow .3s;
+  animation:subFloat 4.2s ease-in-out infinite;
+  transform-style:preserve-3d; will-change:transform;
+  cursor:pointer;
+  flex:1 1 88px;
+  max-width:120px;
+  box-sizing:border-box;
+}
+.subkpi:nth-of-type(2n){ animation-delay:.35s }
+.subkpi:nth-of-type(3n){ animation-delay:.7s }
+.subkpi:hover{
+  border-color:rgba(212,160,23,.4);
+  box-shadow:0 10px 20px rgba(0,0,0,.45), 0 0 0 1px rgba(212,160,23,.12) inset;
+}
+@keyframes subFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-3px); }
+}
+.subkpi-icon{ font-size:.95rem; margin-bottom:4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+.subkpi-icon-badge{
+  width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 5px;
+  font-size:.72rem; line-height:1;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  transition:transform .3s;
+}
+.subkpi-cat:hover .subkpi-icon-badge{ transform:scale(1.12) rotate(-4deg); }
+.subkpi-lbl{ font-size:.48rem; color:#5A7090; text-transform:uppercase; letter-spacing:.6px; font-weight:700; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.subkpi-val{ font-size:.74rem; font-weight:700; color:#E8F0FA; line-height:1.2; word-break:break-word; }
+.subkpi-sub{ font-size:.52rem; color:#3A4A6A; margin-top:2px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* Tick + node linking a tile up to the bus line — only tiles JS has
+   marked as "first row" get this; everything else stays plain */
+.subkpi-node{ display:none; }
+.subkpi-linked::before{
+  content:'';
+  position:absolute;
+  left:50%; top:-10px;
+  width:2px; height:10px;
+  background:linear-gradient(180deg,rgba(212,160,23,.55),rgba(212,160,23,.15));
+  transform:translateX(-50%);
+}
+.subkpi-linked .subkpi-node{
+  display:block;
+  position:absolute; left:50%; top:-13px;
+  width:5px; height:5px; border-radius:50%;
+  background:#F5D060; transform:translate(-50%,-50%);
+  box-shadow:0 0 5px rgba(245,208,96,.75);
+}
+
+@media(max-width:900px){
+  .subkpi{ flex-basis:80px; }
+}
+@media(max-width:480px){
+  .subkpi-row{ gap:8px; }
+  .subkpi{ flex-basis:calc(33.33% - 6px); max-width:none; }
+  .exp-connector{ display:none; }
+  .subkpi-linked::before, .subkpi-linked .subkpi-node{ display:none; }
+}
+
+/* ══════════════════════════════
    SECTION CARDS
 ══════════════════════════════ */
 .sc{
@@ -860,22 +979,36 @@ tbody td{padding:4px 10px;color:#A8B8D0;vertical-align:middle;line-height:1.3;fo
   position:fixed;inset:0;background:#0B0E1A;z-index:99999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   transition:opacity .4s;
+  padding:70px 16px;box-sizing:border-box;
 }
 #loader.gone{opacity:0;pointer-events:none}
 .loader-logo{
-  width:min(340px,72vw);max-width:340px;height:auto;display:block;
+  width:min(340px,72vw,54vh);max-width:340px;height:auto;display:block;
   margin-bottom:4px;
   filter:drop-shadow(0 8px 26px rgba(212,160,23,.3));
 }
-.lring{width:40px;height:40px;border:2px solid rgba(255,255,255,.07);border-top-color:#4A9EDB;border-radius:50%;animation:spinAnim 1s linear infinite}
+.lring{width:40px;height:40px;border:2px solid rgba(255,255,255,.07);border-top-color:#4A9EDB;border-radius:50%;animation:spinAnim 1s linear infinite;flex-shrink:0}
 #loader .l-sub{color:#3A5070;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase}
 .loader-footer{
   position:absolute;bottom:20px;left:16px;right:16px;text-align:center;
   color:#3A5070;font-size:.66rem;letter-spacing:.3px;line-height:1.6;
 }
 @media(max-width:480px){
-  .loader-logo{width:min(260px,80vw)}
+  .loader-logo{width:min(260px,80vw,48vh)}
   .loader-footer{font-size:.6rem;bottom:14px}
+}
+/* Short / landscape phone screens — scale everything down so the
+   logo, spinner and footer never overlap */
+@media(max-height:500px){
+  #loader{gap:8px;padding:44px 16px}
+  .loader-logo{width:min(200px,60vw,40vh);margin-bottom:0}
+  .lring{width:26px;height:26px}
+  #loader .l-sub{font-size:.6rem}
+  .loader-footer{font-size:.56rem;line-height:1.4;bottom:8px}
+}
+@media(max-height:340px){
+  .loader-logo{width:min(150px,50vw,34vh)}
+  .loader-footer{display:none}
 }
 
 /* ══════════════════════════════
@@ -1532,6 +1665,19 @@ thead th { font-size: clamp(.55rem, .75vw, .7rem); }
     </div>
   </div>
 
+  <!-- Connector line dropping from Total Expenses into the mini-KPI strip -->
+  <div class="exp-connector" id="expConnector"><div class="conn-joint"></div></div>
+  <div class="subkpi-row" id="subkpiRow">
+    <div class="subkpi" onclick="showSubkpiDetail('txn', event)" title="Tap to see all transactions">
+      <div class="subkpi-node"></div>
+      <div class="subkpi-icon">&#x1F9FE;</div>
+      <div class="subkpi-lbl">Transactions</div>
+      <div class="subkpi-val" id="esk-txn">0</div>
+    </div>
+    <!-- One tile per expense category (built by renderExp), full breakdown — same data as the "Expense by Category" table below, biggest amount first -->
+    <div id="subkpiCatTiles" style="display:contents"></div>
+  </div>
+
   <div class="g21">
     <div class="sc">
       <div class="stitle"><span class="ticon">&#x1F4CB;</span> Expense by Category</div><div class="stsubtitle" id="catSubtitle">Loading...</div>
@@ -1799,6 +1945,7 @@ const MULTI_PALETTE = ['#D4A017','#44AAFF','#00FF88','#FF3355','#AA66FF','#00DDF
 
 let ALL = [], HDRS = [];
 let charts = {};
+let subkpiData = {}; // last-rendered context for the Expense mini-KPI strip (used by showSubkpiDetail)
 
 // ═══════════════════════════════════════
 // HELPERS
@@ -1912,7 +2059,7 @@ function chartHoverPointer(evt, elements){
 // 3D TILT-ON-HOVER — cards subtly rotate towards the cursor
 // ═══════════════════════════════════════
 function initCardTilt(){
-  document.querySelectorAll('.sc, .kcard3, .pay-src-card, .stk-plat-card').forEach(card=>{
+  document.querySelectorAll('.sc, .kcard3, .pay-src-card, .stk-plat-card, .subkpi').forEach(card=>{
     if(card.dataset.tiltBound) return;
     card.dataset.tiltBound = '1';
     card.addEventListener('mousemove', e=>{
@@ -1936,7 +2083,7 @@ function initCardTilt(){
 // ═══════════════════════════════════════
 function playCardEntrance(scope){
   const root = scope || document;
-  const cards = root.querySelectorAll('.sc, .kcard3');
+  const cards = root.querySelectorAll('.sc, .kcard3, .subkpi');
   cards.forEach((card,i)=>{
     card.classList.remove('card-enter');
     void card.offsetWidth; // restart animation
@@ -1967,6 +2114,122 @@ function animateNumber(el, endVal, formatFn, duration){
 // ═══════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// EXPENSE SUB-KPI CONNECTOR — positions the stem under "Total Expenses"
+// and draws the bus line across only the FIRST row of mini-KPI tiles.
+// Tiles that wrap to a 2nd/3rd row get no tick — that's what looked like
+// a stray disconnected line before, so we only "link" row 1.
+// ═══════════════════════════════════════
+function layoutSubkpiConnector(){
+  const row = document.getElementById('subkpiRow');
+  const conn = document.getElementById('expConnector');
+  if(!row || !conn) return;
+  const tiles = Array.from(row.querySelectorAll('.subkpi'));
+  if(!tiles.length) return;
+
+  const rowRect = row.getBoundingClientRect();
+  if(rowRect.width<=0) return;
+
+  // Row-1 tiles = those sharing the smallest top position (small tolerance
+  // for sub-pixel rounding across browsers)
+  const tops = tiles.map(t=>t.getBoundingClientRect().top);
+  const minTop = Math.min(...tops);
+  const row1 = [];
+  tiles.forEach((t,i)=>{
+    if(Math.abs(tops[i]-minTop) < 2){ t.classList.add('subkpi-linked'); row1.push(t); }
+    else t.classList.remove('subkpi-linked');
+  });
+  if(!row1.length) return;
+
+  // Bus line spans exactly the row-1 tiles' extent (not the full container,
+  // so it never implies a connection to tiles that wrapped below)
+  const firstRect = row1[0].getBoundingClientRect();
+  const lastRect = row1[row1.length-1].getBoundingClientRect();
+  const busLeftPct = ((firstRect.left + firstRect.width/2 - rowRect.left) / rowRect.width) * 100;
+  const busRightPct = ((rowRect.right - (lastRect.left + lastRect.width/2)) / rowRect.width) * 100;
+  conn.style.setProperty('--bus-left', Math.max(busLeftPct,0).toFixed(2)+'%');
+  conn.style.setProperty('--bus-right', Math.max(busRightPct,0).toFixed(2)+'%');
+
+  // Stem aligns under the Total Expenses card, relative to the connector's
+  // own parent (shared with the KPI row, so the percentages line up)
+  const stemCard = document.querySelector('#p-exp .kc-expense');
+  const parent = conn.parentElement;
+  if(stemCard && parent){
+    const parentRect = parent.getBoundingClientRect();
+    if(parentRect.width>0){
+      const cardRect = stemCard.getBoundingClientRect();
+      const centerPct = ((cardRect.left + cardRect.width/2 - parentRect.left) / parentRect.width) * 100;
+      conn.style.setProperty('--stem-x', centerPct.toFixed(2)+'%');
+    }
+  }
+}
+let __connResizeT;
+window.addEventListener('resize', ()=>{
+  clearTimeout(__connResizeT);
+  __connResizeT = setTimeout(layoutSubkpiConnector, 150);
+});
+
+// ═══════════════════════════════════════
+// EXPENSE SUB-KPI DETAIL POPUP — tapping a mini-KPI tile opens the same
+// detail popover used by the charts, listing the matching rows from the
+// Raw Data table below, sorted biggest amount first.
+// ═══════════════════════════════════════
+function showSubkpiDetail(kind, evt, extra){
+  // Stop this click from bubbling to the document-level "click outside
+  // closes the popover" listener — without this, that listener sees the
+  // same click (target = the KPI tile, not the popover) and immediately
+  // closes the popover we're about to open.
+  if(evt && typeof evt.stopPropagation === 'function') evt.stopPropagation();
+
+  const d = subkpiData || {};
+  const expOnly = d.expOnly || [];
+
+  const mkRecords = rows => rows.slice().sort((a,b)=>amt(b)-amt(a)).map(r=>({
+    label: (desc(r)||cat(r)||'—') + (dt(r)?(' · '+dt(r)):''),
+    amount: INR(amt(r)),
+    color: cat(r)==="DEBTOR'S" ? '#4A9EDB' : '#FF3355'
+  }));
+
+  if(kind==='txn'){
+    const total = expOnly.reduce((s,r)=>s+amt(r),0);
+    openDetailModal(evt, 'All Transactions',
+      expOnly.length+' transactions · Total '+INR(total), mkRecords(expOnly), 'No expense entries', '&#x1F9FE;');
+
+  } else if(kind==='cat'){
+    const label = extra;
+    const rows = expOnly.filter(r=>(cat(r)||'OTHER')===label);
+    const catTotal = rows.reduce((s,r)=>s+amt(r),0);
+    openDetailModal(evt, 'Category: '+label, rows.length+' transactions · Total '+INR(catTotal), mkRecords(rows), 'No entries', '&#x1F3F7;');
+  }
+}
+
+// ═══════════════════════════════════════
+// CATEGORY ICONS — maps common expense-category names to an emoji icon
+// for the mini-KPI tiles (falls back to a generic tag icon for anything
+// not recognised, so it stays robust to whatever categories are in the sheet)
+// ═══════════════════════════════════════
+const CAT_ICONS = {
+  'RENT':'\u{1F3E0}', 'HOUSE RENT':'\u{1F3E0}', 'HOME':'\u{1F3E0}',
+  'FOOD':'\u{1F354}', 'GROCERY':'\u{1F6D2}', 'GROCERIES':'\u{1F6D2}', 'DINING':'\u{1F37D}️',
+  'TRAVEL':'✈️', 'TRANSPORT':'\u{1F695}', 'FUEL':'⛽', 'PETROL':'⛽', 'CAB':'\u{1F695}',
+  'SHOPPING':'\u{1F6CD}️', 'CLOTHING':'\u{1F455}', 'CLOTHES':'\u{1F455}',
+  'UTILITIES':'\u{1F4A1}', 'ELECTRICITY':'\u{1F4A1}', 'WATER':'\u{1F6B0}', 'INTERNET':'\u{1F4F6}', 'MOBILE':'\u{1F4F1}', 'RECHARGE':'\u{1F4F1}',
+  'LOAN-EMI':'\u{1F3E6}', 'LOAN':'\u{1F3E6}', 'EMI':'\u{1F3E6}',
+  "DEBTOR'S":'\u{1F91D}', 'DEBTORS':'\u{1F91D}',
+  'ENTERTAINMENT':'\u{1F3AC}', 'SUBSCRIPTION':'\u{1F4FA}', 'OTT':'\u{1F3AC}',
+  'HEALTH':'\u{1F3E5}', 'MEDICAL':'\u{1F48A}', 'INSURANCE':'\u{1F6E1}️',
+  'EDUCATION':'\u{1F393}', 'SCHOOL':'\u{1F393}',
+  'GIFT':'\u{1F381}', 'GIFTS':'\u{1F381}',
+  'INVESTMENT':'\u{1F4C8}', 'MAINTENANCE':'\u{1F527}', 'REPAIR':'\u{1F527}',
+  'OTHER':'\u{1F3F7}️', 'OTHERS':'\u{1F3F7}️', 'MISC':'\u{1F3F7}️'
+};
+function getCatIcon(name){
+  const key = String(name||'').trim().toUpperCase();
+  if(CAT_ICONS[key]) return CAT_ICONS[key];
+  for(const k in CAT_ICONS){ if(key.includes(k)) return CAT_ICONS[k]; }
+  return '\u{1F3F7}️';
+}
+
 function switchTab(btn){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('act'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
@@ -2306,6 +2569,49 @@ function renderExp(){
   // Category subtitle
   const sub = document.getElementById('catSubtitle');
   if(sub) sub.textContent = ents.length+' categories · Total: '+INR(total);
+
+  // ── Expense mini-KPI strip ──
+  (function(){
+    const txnEl = document.getElementById('esk-txn');
+    if(txnEl) animateNumber(txnEl, expOnly.length, v=>Math.round(v).toLocaleString('en-IN'));
+
+    // Full expense-by-category breakdown as its own tile per category —
+    // same data/order as the "Expense by Category" table, biggest first.
+    // Each tile gets a category icon (instead of a flat colour dot) and an
+    // animated fill-bar under the value showing its share of total spend.
+    const catSlot = document.getElementById('subkpiCatTiles');
+    if(catSlot){
+      const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      catSlot.innerHTML = '';
+      ents.forEach(([name,val],i)=>{
+        const col = hcol(i, ents.length, 1);
+        const icon = getCatIcon(name);
+        const pct = total>0 ? (val/total*100) : 0;
+        const tile = document.createElement('div');
+        tile.className = 'subkpi subkpi-cat';
+        tile.title = 'Tap to see '+name+' transactions';
+        tile.innerHTML = `
+          <div class="subkpi-node"></div>
+          <div class="subkpi-icon-badge" style="background:${col}22;border-color:${col}55">
+            <span style="filter:drop-shadow(0 0 3px ${col}99)">${icon}</span>
+          </div>
+          <div class="subkpi-lbl">${esc(name)}</div>
+          <div class="subkpi-val">&#x20B9;0</div>
+          <div class="subkpi-sub">${pct.toFixed(1)}%</div>
+        `;
+        const valEl = tile.querySelector('.subkpi-val');
+        animateNumber(valEl, val, INR);
+        tile.addEventListener('click', evt=>showSubkpiDetail('cat', evt, name));
+        catSlot.appendChild(tile);
+      });
+    }
+
+    // Stash the computed context so tile clicks can pull the same
+    // records shown in the Raw Data table below, sorted highest→lowest
+    subkpiData = { expOnly, ents };
+
+    layoutSubkpiConnector();
+  })();
 
   // Heat color helper inline (same as chart)
   function hcol(rank,tot,a){
