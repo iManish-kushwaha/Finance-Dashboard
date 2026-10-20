@@ -103,6 +103,7 @@ var SIDEBAR_SIDE = 'left'; // side panel position: 'left' or 'right'
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:Calibri,'Segoe UI',Arial,sans-serif;font-size:0.92rem;line-height:1.45;
   color:var(--text);background:#fff;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -977,11 +978,16 @@ html.theme-system .hello{color:#9FB0C4}
 .sv-meta{flex:none;padding:6px 14px;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sv-meta b{color:var(--muted);font-weight:600}
 .sv-body{position:relative;flex:1;min-height:0;overflow:auto}
-.sv-tbl{border-collapse:separate;border-spacing:0;min-width:100%;font-size:calc(14.5px * var(--fz))}
-.sv-tbl th,.sv-tbl td{max-width:320px;padding:.5em .9em;border-bottom:1px solid var(--line);border-right:1px solid var(--line);
-  text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-tbl{border-collapse:separate;border-spacing:0;min-width:100%}
+/* Excel jaisi rows: Excel ki default row = 20px (15pt), text = Calibri 11pt, 1px gridline.
+   Default zoom (90%) par bilkul Excel jitni; zoom buttons se Excel ki tarah chhoti/badi. Phone par bhi same. */
+.sv-tbl{font:calc(11pt * var(--fz) / .9)/1 Calibri,Carlito,'Segoe UI',Arial,sans-serif;table-layout:auto}
+.sv-tbl th,.sv-tbl td{box-sizing:border-box;height:calc(20px * var(--fz) / .9);max-width:320px;padding:0 4px;
+  border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  line-height:1;text-align:left;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-tbl tr{height:calc(20px * var(--fz) / .9)}
 .sv-tbl thead th{position:sticky;top:0;z-index:1;background:var(--soft);font-weight:700}
-.sv-tbl .rn{position:sticky;left:0;min-width:42px;background:var(--soft);color:var(--faint);font-weight:600;text-align:right}
+.sv-tbl .rn{position:sticky;left:0;min-width:36px;padding:0 4px;background:var(--soft);color:var(--faint);font-weight:500;text-align:center}
 .sv-tbl thead .rn{z-index:2}
 .sv-tbl tbody tr:hover td{background:var(--soft)}
 .sv-tbl td.num{text-align:right;font-variant-numeric:tabular-nums}
